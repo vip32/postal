@@ -38,7 +38,10 @@ namespace Postal
 
         ControllerContext CreateControllerContext()
         {
-            var httpContext = new EmailHttpContext(urlHostName);
+            // HACK: To make unit tests pass
+            // Maybe expose the HttpServerUtility dependency at some point for better mocking?
+            var server = HttpContext.Current != null ? new HttpServerUtilityWrapper(HttpContext.Current.Server) : null;
+            var httpContext = new EmailHttpContext(urlHostName, server);
             var routeData = new RouteData();
             routeData.Values["controller"] = EmailViewDirectoryName;
             var requestContext = new RequestContext(httpContext, routeData);
@@ -62,6 +65,7 @@ namespace Postal
         {
             using (var writer = new StringWriter())
             {
+                controllerContext.HttpContext.Response.Output = writer;
                 var viewContext = new ViewContext(controllerContext, view, viewData, new TempDataDictionary(), writer);
                 view.Render(viewContext, writer);
                 return writer.GetStringBuilder().ToString();

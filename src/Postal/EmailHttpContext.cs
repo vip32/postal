@@ -10,20 +10,23 @@ namespace Postal
 
     class EmailHttpContext : HttpContextBase
     {
-        public EmailHttpContext(string urlHostName)
+        public EmailHttpContext(string urlHostName, HttpServerUtilityBase server)
         {
             items = new Hashtable();
             request = new EmailHttpRequest(urlHostName);
             response = new EmailHttpResponse();
+            this.server = server;
         }
 
         Hashtable items;
         HttpRequestBase request;
         HttpResponseBase response;
+        HttpServerUtilityBase server;
 
         public override IDictionary Items { get { return items; } }
         public override HttpRequestBase Request { get { return request; } }
         public override HttpResponseBase Response { get { return response; } }
         public override Cache Cache { get { return HttpRuntime.Cache; } }
+        public override HttpServerUtilityBase Server { get { return server; } }
     }
 }

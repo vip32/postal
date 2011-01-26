@@ -12,5 +12,7 @@ namespace Postal
         {
             return virtualPath;
         }
+
+        public override System.IO.TextWriter Output { get; set; }
     }
 }

@@ -23,8 +23,7 @@ namespace Postal
             Attachments = new List<Attachment>();
             ViewName = viewName;
             ViewData = new ViewDataDictionary();
-            if (IsStronglyTypedEmail())
-                ViewData.Model = this;
+            ViewData.Model = this;
         }
 
         /// <summary>Create an Email where the ViewName is derived from the name of the class.</summary>
