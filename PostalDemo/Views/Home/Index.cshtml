@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Postal Demo";
+}
+
+<h1>Postal</h1>
+
+<ol>
+    <li><a href="@Url.Action("intro")">Introduction</a></li>
+    <li><a href="@Url.Action("index", "old")">Sending email, the old way</a></li>
+    <li><a href="@Url.Action("index", "basic")">The Postal way</a></li>
+    <li><a href="@Url.Action("index", "testable")">Testable emailing</a></li>
+    <li><a href="@Url.Action("index", "strong")">Dynamic?! Bleh, I like my types strong!</a></li>
+    <li><a href="@Url.Action("index", "fancy")">Get fancy - HTML and text emails</a></li>
+    <li><a href="@Url.Action("index", "attachments")">Attachments and async</a></li>
+    <li><a href="@Url.Action("tips")">Tips</a></li>
+    <li><a href="@Url.Action("wrapup")">Wrap up</a></li>
+</ol>

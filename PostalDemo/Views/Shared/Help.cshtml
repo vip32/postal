@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Help Page";
+}
+
+<h1>Help Me!</h1>
+<p>Having trouble with the website? Fill in this form to let us know.</p>
+
+<form method="post" action="@Url.Action("send")">
+    <div class="field">
+        <label>Your name</label>
+        <input type="text" name="name" />
+    </div>
+    <div class="field">
+        <label>Your email address</label>
+        <input type="text" name="emailAddress" />
+    </div>
+    <div class="field">
+        <label>What's wrong?</label>
+        <textarea name="message"></textarea>
+    </div>
+    <div>
+        <button type="submit">Send</button>
+    </div>
+</form>

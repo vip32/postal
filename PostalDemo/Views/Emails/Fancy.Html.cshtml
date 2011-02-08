@@ -1,0 +1,21 @@
+﻿Content-Type: text/html
+
+<html>
+<body>
+    <p>
+        Hello admin,</p>
+    <p>@Model.Name has requested help with the website.</p>
+    <p>
+        Message:<br />
+        <span style="font-weight: bold">@Model.Message</span>
+    </p>
+    <p>
+        You can contact the user here: @Model.UserEmailAddress
+    </p>
+    <p>
+        <a href="@Url.Action("display", "ticket", new { id = Model.TicketId }, "http")">View the support ticket</a>
+    </p>
+    <p>
+        Thanks!</p>
+</body>
+</html>

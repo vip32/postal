@@ -1,0 +1,15 @@
+﻿From: help-form@website.com
+To: support@website.com
+Subject: Support ticket created #@Model.TicketId
+
+Hello admin,
+
+@Model.Name has requested help with the website.
+Message:
+@Model.Message
+
+You can contact the user here: @Model.UserEmailAddress
+
+View the support ticket here: @Url.Action("display", "ticket", new { id = Model.TicketId }, "http")
+
+Thanks!
