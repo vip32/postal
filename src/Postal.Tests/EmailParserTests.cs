@@ -182,5 +182,23 @@ Hello, World!";
                 message.From.ShouldEqual(new MailAddress("test@test.com"));
             }
         }
+
+        [Fact]
+        public void Email_address_can_include_display_name()
+        {
+            var input = @"To: ""John Smith"" <test@test.com>
+From: test2@test.com
+Subject: test
+
+message";
+            var parser = new EmailParser(Mock.Of<IEmailViewRenderer>());
+            var email = new Email("Test");
+            using (var message = parser.Parse(input, email))
+            {
+                message.To[0].Address.ShouldEqual("test@test.com");
+                message.To[0].DisplayName.ShouldEqual("John Smith");
+            }
+            
+        }
     }
 }

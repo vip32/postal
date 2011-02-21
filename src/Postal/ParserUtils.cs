@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -21,7 +18,7 @@ namespace Postal
                 // Skip over any empty lines before the headers.
             }
 
-            var headerStart = new Regex(@"^\s*[A-Za-z]");
+            var headerStart = new Regex(@"^\s*[A-Za-z\-]+\s*:");
             do
             {
                 if (!headerStart.IsMatch(line)) break;
