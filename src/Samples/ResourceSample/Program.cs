@@ -1,7 +1,12 @@
 ﻿
+
 using System;
-using Postal;
+using System.IO;
+using System.Net.Mail;
+using System.Net.Mime;
 using System.Web.Mvc;
+using Newtonsoft.Json;
+using Postal;
 
 namespace ResourceSample
 {
@@ -13,14 +18,14 @@ namespace ResourceSample
     No email is really sent, so it's perfect for debugging.
     */
 
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var engines = new ViewEngineCollection
-                          {
-                              new ResourceRazorViewEngine(typeof(Program).Assembly, @"ResourceSample.Resources.Views")
-                          };
+            {
+                new ResourceRazorViewEngine(typeof (Program).Assembly, @"ResourceSample.Resources.Views")
+            };
 
             var service = new EmailService(engines);
 
@@ -28,10 +33,21 @@ namespace ResourceSample
             email.To = "test1@test.com";
             email.Message = "Hello, non-asp.net world!";
 
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(email));
+            using (var memoryStream = new MemoryStream())
+            {
+                var contentAsBytes = File.ReadAllBytes(@"c:\tmp\test2.log");
+                    //Encoding.UTF8.GetBytes(@"c:\tmp\test2.log");
+                memoryStream.Write(contentAsBytes, 0, contentAsBytes.Length);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
-            service.Send(email);
+                var attachment = new Attachment(memoryStream, "log.txt", MediaTypeNames.Application.Octet);
+                email.Attach(attachment);
+
+                Console.WriteLine(JsonConvert.SerializeObject(email, Formatting.Indented,
+                    new MemoryStreamJsonConverter()));
+
+                service.Send(email);
+            }
         }
     }
-
 }

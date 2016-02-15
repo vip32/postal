@@ -4,6 +4,7 @@ using Should;
 using Xunit;
 using System.Net.Mail;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Postal
 {
@@ -105,9 +106,17 @@ namespace Postal
         public void Attach_adds_attachment()
         {
             dynamic email = new Email("Test");
-            var attachment = new Attachment(new MemoryStream(), "name");
+            var fileStream = new FileStream(@"c:\tmp\test2.log", FileMode.Open);
+            fileStream.Position = 0;
+            var memoryStream = new MemoryStream();
+            fileStream.CopyTo(memoryStream);
+            //var attachment = new Attachment(new MemoryStream(), "name");
+            var attachment = new Attachment(memoryStream, "name");
             email.Attach(attachment);
             ((Email)email).Attachments.ShouldContain(attachment);
+
+            Console.WriteLine(JsonConvert.SerializeObject(email, Formatting.Indented,
+                new MemoryStreamJsonConverter()));
         }
     }
 }

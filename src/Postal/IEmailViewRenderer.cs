@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Postal
+﻿namespace Postal
 {
     /// <summary>
     /// Renders an email view.
