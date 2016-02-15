@@ -12,7 +12,7 @@ namespace Postal
     /// </summary>
     public class FileSystemRazorViewEngine : IViewEngine
     {
-        readonly string viewPathRoot;
+        readonly string _viewPathRoot;
 
         /// <summary>
         /// Creates a new <see cref="FileSystemRazorViewEngine"/> that finds views within the given path.
@@ -20,12 +20,12 @@ namespace Postal
         /// <param name="viewPathRoot">The root directory that contains views.</param>
         public FileSystemRazorViewEngine(string viewPathRoot)
         {
-            this.viewPathRoot = viewPathRoot;
+            this._viewPathRoot = viewPathRoot;
         }
 
         string GetViewFullPath(string path)
         {
-            return Path.Combine(viewPathRoot, path);
+            return Path.Combine(_viewPathRoot, path);
         }
 
         /// <summary>

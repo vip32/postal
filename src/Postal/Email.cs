@@ -4,16 +4,17 @@ using System.Dynamic;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Xtricate.Dynamic;
 
 namespace Postal
 {
     /// <summary>
     /// An Email object has the name of the MVC view to render and a view data dictionary
-    /// to store the data to render. It is best used as a dynamic object, just like the 
+    /// to store the data to render. It is best used as a dynamic object, just like the
     /// ViewBag property of a Controller. Any dynamic property access is mapped to the
     /// view data dictionary.
     /// </summary>
-    public class Email : DynamicObject, IViewDataContainer
+    public class Email : Expando /*DynamicObject*///, IViewDataContainer
     {
         /// <summary>
         /// Creates a new Email, that will render the given view.
@@ -67,25 +68,25 @@ namespace Postal
         }
 
         /// <summary>
-        /// Convenience method that sends this email via a default EmailService. 
+        /// Convenience method that sends this email via a default EmailService.
         /// </summary>
-        public void Send()
-        {
-            CreateEmailService().Send(this);
-        }
+        //public void Send()
+        //{
+        //    CreateEmailService().Send(this);
+        //}
 
         /// <summary>
-        /// Convenience method that sends this email asynchronously via a default EmailService. 
+        /// Convenience method that sends this email asynchronously via a default EmailService.
         /// </summary>
-        public Task SendAsync()
-        {
-            return CreateEmailService().SendAsync(this);
-        }
+        //public Task SendAsync()
+        //{
+        //    return CreateEmailService().SendAsync(this);
+        //}
 
         /// <summary>
         /// A function that returns an instance of <see cref="IEmailService"/>.
         /// </summary>
-        public static Func<IEmailService> CreateEmailService = () => new EmailService();
+        //public static Func<IEmailService> CreateEmailService = () => new EmailService();
 
         // Any dynamic property access is delegated to view data dictionary.
         // This makes for sweet looking syntax - thank you C#4!
@@ -96,22 +97,22 @@ namespace Postal
         /// <param name="binder">Provides the name of the view data property.</param>
         /// <param name="value">The value to store.</param>
         /// <returns>Always returns true.</returns>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            ViewData[binder.Name] = value;
-            return true;
-        }
+        //public override bool TrySetMember(SetMemberBinder binder, object value)
+        //{
+        //    ViewData[binder.Name] = value;
+        //    return true;
+        //}
 
-        /// <summary>
-        /// Tries to get a stored value from <see cref="ViewData"/>.
-        /// </summary>
-        /// <param name="binder">Provides the name of the view data property.</param>
-        /// <param name="result">If found, this is the view data property value.</param>
-        /// <returns>True if the property was found, otherwise false.</returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            return ViewData.TryGetValue(binder.Name, out result);
-        }
+        ///// <summary>
+        ///// Tries to get a stored value from <see cref="ViewData"/>.
+        ///// </summary>
+        ///// <param name="binder">Provides the name of the view data property.</param>
+        ///// <param name="result">If found, this is the view data property value.</param>
+        ///// <returns>True if the property was found, otherwise false.</returns>
+        //public override bool TryGetMember(GetMemberBinder binder, out object result)
+        //{
+        //    return ViewData.TryGetValue(binder.Name, out result);
+        //}
 
         string DeriveViewNameFromClassName()
         {

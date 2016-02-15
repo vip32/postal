@@ -10,8 +10,8 @@ namespace Postal
     /// </summary>
     public class FileSystemRazorView : IView
     {
-        readonly string template;
-        readonly string cacheName;
+        readonly string _template;
+        readonly string _cacheName;
         
         /// <summary>
         /// Creates a new <see cref="FileSystemRazorView"/> using the given view filename.
@@ -19,8 +19,8 @@ namespace Postal
         /// <param name="filename">The filename of the view.</param>
         public FileSystemRazorView(string filename)
         {
-            template = File.ReadAllText(filename);
-            cacheName = filename;
+            _template = File.ReadAllText(filename);
+            _cacheName = filename;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Postal
         /// <param name="writer">The <see cref="TextWriter"/> used to write the rendered output.</param>
         public void Render(ViewContext viewContext, TextWriter writer)
         {
-            var content = Razor.Parse(template, viewContext.ViewData.Model, cacheName);
+            var content = Razor.Parse(_template, viewContext.ViewData.Model, _cacheName);
 
             writer.Write(content);
             writer.Flush();

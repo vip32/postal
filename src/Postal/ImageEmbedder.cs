@@ -20,7 +20,7 @@ namespace Postal
         /// </summary>
         public ImageEmbedder()
         {
-            createLinkedResource = CreateLinkedResource;
+            _createLinkedResource = CreateLinkedResource;
         }
 
         /// <summary>
@@ -29,18 +29,18 @@ namespace Postal
         /// <param name="createLinkedResource">A delegate that creates a <see cref="LinkedResource"/> from an image path or URL.</param>
         public ImageEmbedder(Func<string, LinkedResource> createLinkedResource)
         {
-            this.createLinkedResource = createLinkedResource;
+            this._createLinkedResource = createLinkedResource;
         }
 
-        readonly Func<string, LinkedResource> createLinkedResource;
-        readonly Dictionary<string, LinkedResource> images = new Dictionary<string, LinkedResource>();
+        readonly Func<string, LinkedResource> _createLinkedResource;
+        readonly Dictionary<string, LinkedResource> _images = new Dictionary<string, LinkedResource>();
 
         /// <summary>
         /// Gets if any images have been referenced.
         /// </summary>
         public bool HasImages
         {
-            get { return images.Count > 0; }
+            get { return _images.Count > 0; }
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace Postal
         public LinkedResource ReferenceImage(string imagePathOrUrl, string contentType = null)
         {
             LinkedResource resource;
-            if (images.TryGetValue(imagePathOrUrl, out resource)) return resource;
+            if (_images.TryGetValue(imagePathOrUrl, out resource)) return resource;
 
-            resource = createLinkedResource(imagePathOrUrl);
+            resource = _createLinkedResource(imagePathOrUrl);
 
             contentType = contentType ?? DetermineContentType(imagePathOrUrl);
             if (contentType != null)
@@ -81,7 +81,7 @@ namespace Postal
                 resource.ContentType = new ContentType(contentType);
             }
 
-            images[imagePathOrUrl] = resource;
+            _images[imagePathOrUrl] = resource;
             return resource;
         }
 
@@ -109,7 +109,7 @@ namespace Postal
         /// </summary>
         public void AddImagesToView(AlternateView view)
         {
-            foreach (var image in images)
+            foreach (var image in _images)
             {
                 view.LinkedResources.Add(image.Value);
             }

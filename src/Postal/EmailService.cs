@@ -22,9 +22,9 @@ namespace Postal
         /// <param name="createSmtpClient">A function that creates a <see cref="SmtpClient"/>. If null, a default creation function is used.</param>
         public EmailService(ViewEngineCollection viewEngines, Func<SmtpClient> createSmtpClient = null)
         {
-            emailViewRenderer = new EmailViewRenderer(viewEngines);
-            emailParser = new EmailParser(emailViewRenderer);
-            this.createSmtpClient = createSmtpClient ?? (() => new SmtpClient());
+            _emailViewRenderer = new EmailViewRenderer(viewEngines);
+            _emailParser = new EmailParser(_emailViewRenderer);
+            _createSmtpClient = createSmtpClient ?? (() => new SmtpClient());
         }
 
         /// <summary>
@@ -32,14 +32,14 @@ namespace Postal
         /// </summary>
         public EmailService(IEmailViewRenderer emailViewRenderer, IEmailParser emailParser, Func<SmtpClient> createSmtpClient)
         {
-            this.emailViewRenderer = emailViewRenderer;
-            this.emailParser = emailParser;
-            this.createSmtpClient = createSmtpClient;
+            _emailViewRenderer = emailViewRenderer;
+            _emailParser = emailParser;
+            _createSmtpClient = createSmtpClient;
         }
 
-        readonly IEmailViewRenderer emailViewRenderer;
-        readonly IEmailParser emailParser;
-        readonly Func<SmtpClient> createSmtpClient;
+        readonly IEmailViewRenderer _emailViewRenderer;
+        readonly IEmailParser _emailParser;
+        readonly Func<SmtpClient> _createSmtpClient;
 
         /// <summary>
         /// Sends an email using an <see cref="SmtpClient"/>.
@@ -48,7 +48,7 @@ namespace Postal
         public void Send(Email email)
         {
             using (var mailMessage = CreateMailMessage(email))
-            using (var smtp = createSmtpClient())
+            using (var smtp = _createSmtpClient())
             {
                 smtp.Send(mailMessage);
             }
@@ -66,7 +66,7 @@ namespace Postal
             var mailMessage = CreateMailMessage(email);
             try
             {
-                var smtp = createSmtpClient();
+                var smtp = _createSmtpClient();
                 try
                 {
                     var taskCompletionSource = new TaskCompletionSource<object>();
@@ -113,8 +113,8 @@ namespace Postal
         /// <returns>A <see cref="MailMessage"/> containing the rendered email.</returns>
         public MailMessage CreateMailMessage(Email email)
         {
-            var rawEmailString = emailViewRenderer.Render(email);
-            var mailMessage = emailParser.Parse(rawEmailString, email);
+            var rawEmailString = _emailViewRenderer.Render(email);
+            var mailMessage = _emailParser.Parse(rawEmailString, email);
             return mailMessage;
         }
     }

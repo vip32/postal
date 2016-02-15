@@ -124,21 +124,21 @@ namespace Postal
 
         class TemplateParts
         {
-            readonly string header;
-            readonly string body;
+            readonly string _header;
+            readonly string _body;
 
             public TemplateParts(string header, string body)
             {
-                this.header = header;
-                this.body = body;
+                this._header = header;
+                this._body = body;
             }
 
             public void Write(TextWriter writer)
             {
                 writer.WriteLine("<!--");
-                writer.WriteLine(header);
+                writer.WriteLine(_header);
                 writer.WriteLine("-->");
-                writer.WriteLine(body);
+                writer.WriteLine(_body);
             }
         }
 

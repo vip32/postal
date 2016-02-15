@@ -4,7 +4,7 @@ using Postal;
 
 namespace ConsoleSample
 {
-    /* 
+    /*
     Before running this sample, please start the SMTP development server,
     found in the Postal code directory: tools\smtp4dev.exe
 
@@ -31,7 +31,7 @@ namespace ConsoleSample
             // Alternatively, set the service factory like this:
             /*
             Email.CreateEmailService = () => new EmailService(engines);
-            
+
             dynamic email = new Email("Test");
             email.Message = "Hello, non-asp.net world!";
             email.Send();

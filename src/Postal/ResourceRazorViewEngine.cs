@@ -12,8 +12,8 @@ namespace Postal
     /// </summary>
     public class ResourceRazorViewEngine : IViewEngine
     {
-        private readonly Assembly viewSourceAssembly;
-        private readonly string viewPathRoot;
+        private readonly Assembly _viewSourceAssembly;
+        private readonly string _viewPathRoot;
 
         /// <summary>
         /// Creates a new <see cref="ResourceRazorViewEngine"/> that finds views in the given assembly.
@@ -22,8 +22,8 @@ namespace Postal
         /// <param name="viewPathRoot">A common resource path prefix.</param>
         public ResourceRazorViewEngine(Assembly viewSourceAssembly, string viewPathRoot)
         {
-            this.viewSourceAssembly = viewSourceAssembly;
-            this.viewPathRoot = viewPathRoot;
+            this._viewSourceAssembly = viewSourceAssembly;
+            this._viewPathRoot = viewPathRoot;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Postal
 
             if (existingPath != null)
             {
-                return new ViewEngineResult(new ResourceRazorView(viewSourceAssembly, existingPath), this);
+                return new ViewEngineResult(new ResourceRazorView(_viewSourceAssembly, existingPath), this);
             }
             
             return new ViewEngineResult(possibleFullPaths);
@@ -74,12 +74,12 @@ namespace Postal
 
         string GetViewFullPath(string path)
         {
-            return String.Format("{0}.{1}", viewPathRoot, path);
+            return String.Format("{0}.{1}", _viewPathRoot, path);
         }
 
         bool ResourceExists(string name)
         {
-            return viewSourceAssembly.GetManifestResourceNames().Contains(name);
+            return _viewSourceAssembly.GetManifestResourceNames().Contains(name);
         }
     }
 }

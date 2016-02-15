@@ -132,7 +132,7 @@ namespace Postal
         IEnumerable<AlternateView> CreateAlternativeViews(string deliminatedViewNames, Email email)
         {
             var viewNames = deliminatedViewNames.Split(new[] { ',', ' ', ';' }, StringSplitOptions.RemoveEmptyEntries);
-            return from viewName in viewNames 
+            return from viewName in viewNames
                    select CreateAlternativeView(email, viewName);
         }
 

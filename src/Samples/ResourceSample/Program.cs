@@ -1,10 +1,11 @@
 ﻿
+using System;
 using Postal;
 using System.Web.Mvc;
 
 namespace ResourceSample
 {
-    /* 
+    /*
     Before running this sample, please start the SMTP development server,
     found in the Postal code directory: tools\smtp4dev.exe
 
@@ -24,7 +25,11 @@ namespace ResourceSample
             var service = new EmailService(engines);
 
             dynamic email = new Email("Test");
+            email.To = "test1@test.com";
             email.Message = "Hello, non-asp.net world!";
+
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(email));
+
             service.Send(email);
         }
     }
