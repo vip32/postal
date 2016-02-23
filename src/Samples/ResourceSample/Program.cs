@@ -30,6 +30,7 @@ namespace ResourceSample
             dtemplate.To = "test1@test.com";
             dtemplate.Message = "Hello, non-asp.net world! ";
             dtemplate.Test = "test property";
+            dtemplate.SubjectSuffix = DateTime.Now.ToShortTimeString();
             dtemplate.Values = new[] {"one", "two", "three"};
             template.Attach(@"c:\tmp\test2.log");
             template.Attach(@"c:\tmp\cat.jpg", "CatImageId"); // TODO: put in progam folder
