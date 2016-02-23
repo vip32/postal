@@ -29,7 +29,7 @@ namespace Postal
         /// <param name="createLinkedResource">A delegate that creates a <see cref="LinkedResource"/> from an image path or URL.</param>
         public ImageEmbedder(Func<string, LinkedResource> createLinkedResource)
         {
-            this._createLinkedResource = createLinkedResource;
+            _createLinkedResource = createLinkedResource;
         }
 
         readonly Func<string, LinkedResource> _createLinkedResource;

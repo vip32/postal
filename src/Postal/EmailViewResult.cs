@@ -129,8 +129,8 @@ namespace Postal
 
             public TemplateParts(string header, string body)
             {
-                this._header = header;
-                this._body = body;
+                _header = header;
+                _body = body;
             }
 
             public void Write(TextWriter writer)

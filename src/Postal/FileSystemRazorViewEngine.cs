@@ -20,7 +20,7 @@ namespace Postal
         /// <param name="viewPathRoot">The root directory that contains views.</param>
         public FileSystemRazorViewEngine(string viewPathRoot)
         {
-            this._viewPathRoot = viewPathRoot;
+            _viewPathRoot = viewPathRoot;
         }
 
         string GetViewFullPath(string path)

@@ -22,8 +22,8 @@ namespace Postal
         /// <param name="viewPathRoot">A common resource path prefix.</param>
         public ResourceRazorViewEngine(Assembly viewSourceAssembly, string viewPathRoot)
         {
-            this._viewSourceAssembly = viewSourceAssembly;
-            this._viewPathRoot = viewPathRoot;
+            _viewSourceAssembly = viewSourceAssembly;
+            _viewPathRoot = viewPathRoot;
         }
 
         /// <summary>

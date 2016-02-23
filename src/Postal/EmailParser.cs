@@ -19,10 +19,10 @@ namespace Postal
         /// </summary>
         public EmailParser(IEmailViewRenderer alternativeViewRenderer)
         {
-            this.alternativeViewRenderer = alternativeViewRenderer;
+            _alternativeViewRenderer = alternativeViewRenderer;
         }
 
-        readonly IEmailViewRenderer alternativeViewRenderer;
+        readonly IEmailViewRenderer _alternativeViewRenderer;
 
         /// <summary>
         /// Parses the email view output into a <see cref="MailMessage"/>.
@@ -139,7 +139,7 @@ namespace Postal
         AlternateView CreateAlternativeView(Email email, string alternativeViewName)
         {
             var fullViewName = GetAlternativeViewName(email, alternativeViewName);
-            var output = alternativeViewRenderer.Render(email, fullViewName);
+            var output = _alternativeViewRenderer.Render(email, fullViewName);
 
             string contentType;
             string body;

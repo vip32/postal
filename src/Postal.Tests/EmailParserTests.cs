@@ -79,7 +79,7 @@ Hello, World!";
             {
                 message.CC[0].Address.ShouldEqual("test3@test.com");
                 message.CC[1].Address.ShouldEqual("test4@test.com");
-                message.CC[2].Address.ShouldEqual("test5@test.com");                
+                message.CC[2].Address.ShouldEqual("test5@test.com");
             }
         }
 
@@ -218,7 +218,7 @@ Hello, World!";
             var email = new Email("Test");
             email.Attach(new Attachment(new MemoryStream(), "name"));
             var parser = new EmailParser(Mock.Of<IEmailViewRenderer>());
-            
+
             var message = parser.Parse(input, email);
 
             message.Attachments.Count.ShouldEqual(1);
@@ -365,7 +365,7 @@ message";
             using (var message = parser.Parse(input, email))
             {
                 message.ReplyToList[0].Address.ShouldEqual("other@test.com");
-                
+
                 // Check for bug reported here: http://aboutcode.net/2010/11/17/going-postal-generating-email-with-aspnet-mvc-view-engines.html#comment-153486994
                 // Should not add anything extra to the 'To' list.
                 message.To.Count.ShouldEqual(1);

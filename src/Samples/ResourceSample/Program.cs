@@ -32,11 +32,10 @@ namespace ResourceSample
             dynamic email = new Email("Test");
             email.To = "test1@test.com";
             email.Message = "Hello, non-asp.net world!";
-
+            
             using (var memoryStream = new MemoryStream())
             {
                 var contentAsBytes = File.ReadAllBytes(@"c:\tmp\test2.log");
-                    //Encoding.UTF8.GetBytes(@"c:\tmp\test2.log");
                 memoryStream.Write(contentAsBytes, 0, contentAsBytes.Length);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 

@@ -20,7 +20,7 @@ namespace Postal
         /// <param name="resourcePath">The resource path.</param>
         public ResourceRazorView(Assembly sourceAssembly, string resourcePath)
         {
-            this._resourcePath = resourcePath;
+            _resourcePath = resourcePath;
             // We've already ensured that the resource exists in ResourceRazorViewEngine
             // ReSharper disable AssignNullToNotNullAttribute
             using (var stream = sourceAssembly.GetManifestResourceStream(resourcePath))

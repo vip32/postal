@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Xtricate.Dynamic;
 
@@ -68,23 +69,23 @@ namespace Postal
         /// <summary>
         /// Convenience method that sends this email via a default EmailService.
         /// </summary>
-        //public void Send()
-        //{
-        //    CreateEmailService().Send(this);
-        //}
+        public void Send()
+        {
+            CreateEmailService().Send(this);
+        }
 
         /// <summary>
         /// Convenience method that sends this email asynchronously via a default EmailService.
         /// </summary>
-        //public Task SendAsync()
-        //{
-        //    return CreateEmailService().SendAsync(this);
-        //}
+        public Task SendAsync()
+        {
+            return CreateEmailService().SendAsync(this);
+        }
 
         /// <summary>
         /// A function that returns an instance of <see cref="IEmailService"/>.
         /// </summary>
-        //public static Func<IEmailService> CreateEmailService = () => new EmailService();
+        public static Func<IEmailService> CreateEmailService = () => new EmailService();
 
         // Any dynamic property access is delegated to view data dictionary.
         // This makes for sweet looking syntax - thank you C#4!
