@@ -22,17 +22,17 @@ namespace ConsoleSample
             var engines = new ViewEngineCollection();
             engines.Add(new FileSystemRazorViewEngine(viewsPath));
 
-            var service = new EmailService(engines);
+            var service = new SmtpMessagingService(engines);
 
-            dynamic email = new Email("Test");
+            dynamic email = new EmailTemplate("Test");
             email.Message = "Hello, non-asp.net world!";
             service.Send(email);
 
             // Alternatively, set the service factory like this:
             /*
-            Email.CreateEmailService = () => new EmailService(engines);
+            Template.CreateEmailService = () => new SmtpMessagingService(engines);
 
-            dynamic email = new Email("Test");
+            dynamic email = new Template("Test");
             email.Message = "Hello, non-asp.net world!";
             email.Send();
             */

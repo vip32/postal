@@ -1,6 +1,8 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
@@ -22,31 +24,36 @@ namespace ResourceSample
     {
         private static void Main()
         {
+            // create the email template
+            var template = new EmailTemplate("Test");
+            dynamic dtemplate = template;
+            dtemplate.To = "test1@test.com";
+            dtemplate.Message = "Hello, non-asp.net world! ";
+            dtemplate.Test = "test property";
+            dtemplate.Values = new[] {"one", "two", "three"};
+            template.Attach(@"c:\tmp\test2.log");
+            template.Attach(@"c:\tmp\cat.jpg", "CatImageId"); // TODO: put in progam folder
+
+            // serialize and deserialize the email template
+            var serializerSettings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>
+                {
+                    new AttachmentReadConverter(true)
+                }
+            };
+            var serializedTemplate = JsonConvert.SerializeObject(template, Formatting.Indented, serializerSettings);
+            Console.WriteLine(serializedTemplate);
+            Console.WriteLine("serialized size: {0}", serializedTemplate.Length);
+            var deserializedTemplate = JsonConvert.DeserializeObject<EmailTemplate>(serializedTemplate, serializerSettings);
+
+            // send the email template
             var engines = new ViewEngineCollection
             {
                 new ResourceRazorViewEngine(typeof (Program).Assembly, @"ResourceSample.Resources.Views")
             };
-
-            var service = new EmailService(engines);
-
-            dynamic email = new Email("Test");
-            email.To = "test1@test.com";
-            email.Message = "Hello, non-asp.net world!";
-            
-            using (var memoryStream = new MemoryStream())
-            {
-                var contentAsBytes = File.ReadAllBytes(@"c:\tmp\test2.log");
-                memoryStream.Write(contentAsBytes, 0, contentAsBytes.Length);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                var attachment = new Attachment(memoryStream, "log.txt", MediaTypeNames.Application.Octet);
-                email.Attach(attachment);
-
-                Console.WriteLine(JsonConvert.SerializeObject(email, Formatting.Indented,
-                    new MemoryStreamJsonConverter()));
-
-                service.Send(email);
-            }
+            var service = new SmtpMessagingService(engines);
+            service.Send(deserializedTemplate);
         }
     }
 }

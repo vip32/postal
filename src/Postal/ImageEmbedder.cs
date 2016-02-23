@@ -9,7 +9,7 @@ namespace Postal
 {
     /// <summary>
     /// Used by the <see cref="HtmlExtensions.EmbedImage"/> helper method.
-    /// It generates the <see cref="LinkedResource"/> objects need to embed images into an email.
+    /// It generates the <see cref="LinkedResource"/> objects need to embed images into a template.
     /// </summary>
     public class ImageEmbedder
     {
@@ -114,6 +114,5 @@ namespace Postal
                 view.LinkedResources.Add(image.Value);
             }
         }
-
     }
 }

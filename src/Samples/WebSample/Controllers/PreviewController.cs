@@ -11,34 +11,34 @@ namespace WebSample.Controllers
     {
         public ActionResult Simple()
         {
-            dynamic email = new Email("Simple");
+            dynamic email = new EmailTemplate("Simple");
             email.Date = DateTime.UtcNow.ToString();
             
-            return new EmailViewResult(email);
+            return new TemplateViewResult(email);
         }
 
         public ActionResult SimpleHtml()
         {
-            dynamic email = new Email("SimpleHtml");
+            dynamic email = new EmailTemplate("SimpleHtml");
             email.Date = DateTime.UtcNow.ToString();
 
-            return new EmailViewResult(email);
+            return new TemplateViewResult(email);
         }
         
         public ActionResult MultiPart()
         {
-            dynamic email = new Email("MultiPart");
+            dynamic email = new EmailTemplate("MultiPart");
             email.Date = DateTime.UtcNow.ToString();
             
-            return new EmailViewResult(email);
+            return new TemplateViewResult(email);
         }
 
         public ActionResult Typed()
         {
-            var email = new TypedEmail();
+            var email = new TypedTemplate();
             email.Date = DateTime.UtcNow.ToString();
             
-            return new EmailViewResult(email);
+            return new TemplateViewResult(email);
         }
     }
 }

@@ -1,36 +1,36 @@
 ﻿<h1>Postal Samples</h1>
 
 <p>
-    The send buttons on this page post to <code>Controllers\EmailController.cs</code><br/>
+    The send buttons on this page post to <code>Controllers\TemplateController.cs</code><br/>
     The preview buttons on this page go to <code>Controllers\PreviewController.cs</code>
 </p>
 
-<h2>Sending a basic email</h2>
-<p>Email will be generated from <code>Views\Email\Simple.cshtml</code></p>
+<h2>Sending a basic Template</h2>
+<p>Template will be generated from <code>Views\Template\Simple.cshtml</code></p>
 <form action="@Url.Action("SendSimple", "Email")" method="POST">
-    <button type="submit" class="btn btn-primary">Send Email</button>
+    <button type="submit" class="btn btn-primary">Send Template</button>
     <a href="@Url.Action("Simple", "Preview")" class="btn btn-default">Preview</a>
 </form>
 
-<h2>Strongly-typed email class</h2>
-<p>Email will be generated from <code>Views\Email\Typed.cshtml</code></p>
+<h2>Strongly-typed Template class</h2>
+<p>Template will be generated from <code>Views\Template\Typed.cshtml</code></p>
 <form action="@Url.Action("SendTypedEmail", "Email")" method="POST">
-    <button type="submit" class="btn btn-primary">Send Email</button>
+    <button type="submit" class="btn btn-primary">Send Template</button>
     <a href="@Url.Action("Typed", "Preview")" class="btn btn-default">Preview</a>
 </form>
 
 <h2>Multipart emails</h2>
 <p>
-    Use separate views to define HTML and plain-text content for a single email.
+    Use separate views to define HTML and plain-text content for a single Template.
 </p>
-<pre>Views\Email\Simple.cshtml
-Views\Email\Simple.Html.cshtml
-Views\Email\Simple.Text.cshtml</pre>
+<pre>Views\Template\Simple.cshtml
+Views\Template\Simple.Html.cshtml
+Views\Template\Simple.Text.cshtml</pre>
 <p>
-    Images can be embedded into the email using <code>@@Html.EmbedImage("~/image.png")</code>.
+    Images can be embedded into the Template using <code>@@Html.EmbedImage("~/image.png")</code>.
 </p>
 <form action="@Url.Action("SendMultiPart", "Email")" method="POST">
-    <button type="submit" class="btn btn-primary">Send Email</button>
+    <button type="submit" class="btn btn-primary">Send Template</button>
     <a href="@Url.Action("MultiPart", "Preview")" class="btn btn-default">Preview</a>
     <a href="@Url.Action("MultiPart", "Preview", new { format = "text"})" class="btn btn-default">Preview Text</a>
     <a href="@Url.Action("MultiPart", "Preview", new { format = "html" })" class="btn btn-default">Preview Html</a>

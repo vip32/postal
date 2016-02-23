@@ -10,46 +10,49 @@ using System.Text.RegularExpressions;
 namespace Postal
 {
     /// <summary>
-    /// Converts the raw string output of a view into a <see cref="MailMessage"/>.
+    ///     Converts the raw string output of a view into a <see cref="MailMessage" />.
     /// </summary>
-    public class EmailParser : IEmailParser
+    public class MailMessageTemplateParser : ITemplateParser<MailMessage>
     {
+        private readonly ITemplateViewRenderer _alternativeViewRenderer;
+
         /// <summary>
-        /// Creates a new <see cref="EmailParser"/>.
+        ///     Creates a new <see cref="MailMessageTemplateParser" />.
         /// </summary>
-        public EmailParser(IEmailViewRenderer alternativeViewRenderer)
+        public MailMessageTemplateParser(ITemplateViewRenderer alternativeViewRenderer)
         {
             _alternativeViewRenderer = alternativeViewRenderer;
         }
 
-        readonly IEmailViewRenderer _alternativeViewRenderer;
-
         /// <summary>
-        /// Parses the email view output into a <see cref="MailMessage"/>.
+        ///     Parses the Template view output into a <see cref="MailMessage" />.
         /// </summary>
-        /// <param name="emailViewOutput">The email view output.</param>
-        /// <param name="email">The <see cref="Email"/> used to generate the output.</param>
-        /// <returns>A <see cref="MailMessage"/> containing the email headers and content.</returns>
-        public MailMessage Parse(string emailViewOutput, Email email)
+        /// <param name="viewOutput">The Template view output.</param>
+        /// <param name="template">The <see cref="Template" /> used to generate the output.</param>
+        /// <returns>A <see cref="MailMessage" /> containing the Template headers and content.</returns>
+        public MailMessage Parse(string viewOutput, Template template)
         {
             var message = new MailMessage();
-            InitializeMailMessage(message, emailViewOutput, email);
+            InitializeMailMessage(message, viewOutput, template);
             return message;
         }
 
-        void InitializeMailMessage(MailMessage message, string emailViewOutput, Email email)
+        private void InitializeMailMessage(MailMessage message, string emailViewOutput, Template template)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (template == null) throw new ArgumentNullException(nameof(template));
+
             using (var reader = new StringReader(emailViewOutput))
             {
-                ParserUtils.ParseHeaders(reader, (key, value) => ProcessHeader(key, value, message, email));
-                AssignCommonHeaders(message, email);
+                ParserUtils.ParseHeaders(reader, (key, value) => ProcessHeader(key, value, message, template));
+                AssignCommonHeaders(message, template);
                 if (message.AlternateViews.Count == 0)
                 {
                     var messageBody = reader.ReadToEnd().Trim();
-                    if (email.ImageEmbedder.HasImages)
+                    if (template.ImageEmbedder.HasImages)
                     {
                         var view = AlternateView.CreateAlternateViewFromString(messageBody, new ContentType("text/html"));
-                        email.ImageEmbedder.AddImagesToView(view);
+                        template.ImageEmbedder.AddImagesToView(view);
                         message.AlternateViews.Add(view);
                         message.Body = "Plain text not available.";
                         message.IsBodyHtml = false;
@@ -61,64 +64,71 @@ namespace Postal
                     }
                 }
 
-                AddAttachments(message, email);
+                AddAttachments(message, template as EmailTemplate);
             }
         }
 
-        void AssignCommonHeaders(MailMessage message, Email email)
+        private void AssignCommonHeaders(MailMessage message, Template template)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (template == null) throw new ArgumentNullException(nameof(template));
+
             if (message.To.Count == 0)
             {
-                AssignCommonHeader<string>(email, "to", to => message.To.Add(to));
-                AssignCommonHeader<MailAddress>(email, "to", to => message.To.Add(to));
+                AssignCommonHeader<string>(template, "to", to => message.To.Add(to));
+                AssignCommonHeader<MailAddress>(template, "to", to => message.To.Add(to));
             }
             if (message.From == null)
             {
-                AssignCommonHeader<string>(email, "from", from => message.From = new MailAddress(from));
-                AssignCommonHeader<MailAddress>(email, "from", from => message.From = from);
+                AssignCommonHeader<string>(template, "from", from => message.From = new MailAddress(from));
+                AssignCommonHeader<MailAddress>(template, "from", from => message.From = from);
             }
             if (message.CC.Count == 0)
             {
-                AssignCommonHeader<string>(email, "cc", cc => message.CC.Add(cc));
-                AssignCommonHeader<MailAddress>(email, "cc", cc => message.CC.Add(cc));
+                AssignCommonHeader<string>(template, "cc", cc => message.CC.Add(cc));
+                AssignCommonHeader<MailAddress>(template, "cc", cc => message.CC.Add(cc));
             }
             if (message.Bcc.Count == 0)
             {
-                AssignCommonHeader<string>(email, "bcc", bcc => message.Bcc.Add(bcc));
-                AssignCommonHeader<MailAddress>(email, "bcc", bcc => message.Bcc.Add(bcc));
+                AssignCommonHeader<string>(template, "bcc", bcc => message.Bcc.Add(bcc));
+                AssignCommonHeader<MailAddress>(template, "bcc", bcc => message.Bcc.Add(bcc));
             }
             if (message.ReplyToList.Count == 0)
             {
-                AssignCommonHeader<string>(email, "replyto", replyTo => message.ReplyToList.Add(replyTo));
-                AssignCommonHeader<MailAddress>(email, "replyto", replyTo => message.ReplyToList.Add(replyTo));
+                AssignCommonHeader<string>(template, "replyto", replyTo => message.ReplyToList.Add(replyTo));
+                AssignCommonHeader<MailAddress>(template, "replyto", replyTo => message.ReplyToList.Add(replyTo));
             }
             if (message.Sender == null)
             {
-                AssignCommonHeader<string>(email, "sender", sender => message.Sender = new MailAddress(sender));
-                AssignCommonHeader<MailAddress>(email, "sender", sender => message.Sender = sender);
+                AssignCommonHeader<string>(template, "sender", sender => message.Sender = new MailAddress(sender));
+                AssignCommonHeader<MailAddress>(template, "sender", sender => message.Sender = sender);
             }
             if (string.IsNullOrEmpty(message.Subject))
             {
-                AssignCommonHeader<string>(email, "subject", subject => message.Subject = subject);
+                AssignCommonHeader<string>(template, "subject", subject => message.Subject = subject);
             }
         }
 
-        void AssignCommonHeader<T>(Email email, string header, Action<T> assign)
+        private void AssignCommonHeader<T>(Template template, string header, Action<T> assign)
             where T : class
         {
+            if (template == null) throw new ArgumentNullException(nameof(template));
+
             object value;
-            if (email.ViewData.TryGetValue(header, out value))
+            if (template.ViewData.TryGetValue(header, out value))
             {
                 var typedValue = value as T;
                 if (typedValue != null) assign(typedValue);
             }
         }
 
-        void ProcessHeader(string key, string value, MailMessage message, Email email)
+        private void ProcessHeader(string key, string value, MailMessage message, Template template)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+
             if (IsAlternativeViewsHeader(key))
             {
-                foreach (var view in CreateAlternativeViews(value, email))
+                foreach (var view in CreateAlternativeViews(value, template))
                 {
                     message.AlternateViews.Add(view);
                 }
@@ -129,17 +139,17 @@ namespace Postal
             }
         }
 
-        IEnumerable<AlternateView> CreateAlternativeViews(string deliminatedViewNames, Email email)
+        private IEnumerable<AlternateView> CreateAlternativeViews(string deliminatedViewNames, Template template)
         {
-            var viewNames = deliminatedViewNames.Split(new[] { ',', ' ', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var viewNames = deliminatedViewNames.Split(new[] {',', ' ', ';'}, StringSplitOptions.RemoveEmptyEntries);
             return from viewName in viewNames
-                   select CreateAlternativeView(email, viewName);
+                select CreateAlternativeView(template, viewName);
         }
 
-        AlternateView CreateAlternativeView(Email email, string alternativeViewName)
+        private AlternateView CreateAlternativeView(Template template, string alternativeViewName)
         {
-            var fullViewName = GetAlternativeViewName(email, alternativeViewName);
-            var output = _alternativeViewRenderer.Render(email, fullViewName);
+            var fullViewName = GetAlternativeViewName(template, alternativeViewName);
+            var output = _alternativeViewRenderer.Render(template, fullViewName);
 
             string contentType;
             string body;
@@ -161,7 +171,8 @@ namespace Postal
                 }
                 else
                 {
-                    throw new Exception("The 'Content-Type' header is missing from the alternative view '" + fullViewName + "'.");
+                    throw new Exception("The 'Content-Type' header is missing from the alternative view '" +
+                                        fullViewName + "'.");
                 }
             }
 
@@ -175,24 +186,23 @@ namespace Postal
                 // A different charset can be specified in the Content-Type header.
                 // e.g. Content-Type: text/html; charset=utf-8
             }
-            email.ImageEmbedder.AddImagesToView(alternativeView);
+            template.ImageEmbedder.AddImagesToView(alternativeView);
             return alternativeView;
         }
 
-        static string GetAlternativeViewName(Email email, string alternativeViewName)
+        private static string GetAlternativeViewName(Template template, string alternativeViewName)
         {
-            if (email.ViewName.StartsWith("~"))
+            if (template == null) throw new ArgumentNullException(nameof(template));
+
+            if (template.ViewName.StartsWith("~"))
             {
-                var index = email.ViewName.LastIndexOf('.');
-                return email.ViewName.Insert(index + 1, alternativeViewName + ".");
+                var index = template.ViewName.LastIndexOf('.');
+                return template.ViewName.Insert(index + 1, alternativeViewName + ".");
             }
-            else
-            {
-                return email.ViewName + "." + alternativeViewName;
-            }
+            return template.ViewName + "." + alternativeViewName;
         }
 
-        MemoryStream CreateStreamOfBody(string body)
+        private MemoryStream CreateStreamOfBody(string body)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -202,7 +212,7 @@ namespace Postal
             return stream;
         }
 
-        string ParseHeadersForContentType(StringReader reader)
+        private string ParseHeadersForContentType(StringReader reader)
         {
             string contentType = null;
             ParserUtils.ParseHeaders(reader, (key, value) =>
@@ -215,13 +225,16 @@ namespace Postal
             return contentType;
         }
 
-        bool IsAlternativeViewsHeader(string headerName)
+        private bool IsAlternativeViewsHeader(string headerName)
         {
+            if (string.IsNullOrEmpty(headerName)) throw new ArgumentNullException(nameof(headerName));
+
             return headerName.Equals("views", StringComparison.OrdinalIgnoreCase);
         }
 
-        void AssignEmailHeaderToMailMessage(string key, string value, MailMessage message)
+        private void AssignEmailHeaderToMailMessage(string key, string value, MailMessage message)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
             switch (key)
             {
                 case "to":
@@ -253,7 +266,8 @@ namespace Postal
                     }
                     else
                     {
-                        throw new ArgumentException(string.Format("Invalid email priority: {0}. It must be High, Medium or Low.", value));
+                        throw new ArgumentException(
+                            string.Format("Invalid Template priority: {0}. It must be High, Medium or Low.", value));
                     }
                     break;
                 case "content-type":
@@ -269,9 +283,12 @@ namespace Postal
             }
         }
 
-        void AddAttachments(MailMessage message, Email email)
+        private void AddAttachments(MailMessage message, EmailTemplate template)
         {
-            foreach (var attachment in email.Attachments)
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (template == null) return;
+
+            foreach (var attachment in template.Attachments)
             {
                 message.Attachments.Add(attachment);
             }

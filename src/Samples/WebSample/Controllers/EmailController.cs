@@ -9,7 +9,7 @@ namespace WebSample.Controllers
         [HttpPost]
         public ActionResult SendSimple()
         {
-            dynamic email = new Email("Simple");
+            dynamic email = new EmailTemplate("Simple");
             email.Date = DateTime.UtcNow.ToString();
             email.Send();
 
@@ -19,17 +19,7 @@ namespace WebSample.Controllers
         [HttpPost]
         public ActionResult SendMultiPart()
         {
-            dynamic email = new Email("MultiPart");
-            email.Date = DateTime.UtcNow.ToString();
-            email.Send();
-
-            return RedirectToAction("Sent", "Home");
-        }
-
-        [HttpPost]
-        public ActionResult SendTypedEmail()
-        {
-            var email = new TypedEmail();
+            dynamic email = new EmailTemplate("MultiPart");
             email.Date = DateTime.UtcNow.ToString();
             email.Send();
 
@@ -37,8 +27,9 @@ namespace WebSample.Controllers
         }
     }
 
-    public class TypedEmail : Email
+    public class TypedTemplate : Template
     {
         public string Date { get; set; }
+        public override string ViewName { get; set; }
     }
 }

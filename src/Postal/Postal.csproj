@@ -92,17 +92,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Email.cs" />
-    <Compile Include="EmailParser.cs" />
-    <Compile Include="EmailService.cs" />
-    <Compile Include="EmailViewRenderer.cs" />
-    <Compile Include="EmailViewResult.cs" />
+    <Compile Include="FileStreamJsonConverter.cs" />
+    <Compile Include="Template.cs" />
+    <Compile Include="MailMessageTemplateParser.cs" />
+    <Compile Include="SmtpMessagingService.cs" />
+    <Compile Include="TemplateViewRenderer.cs" />
+    <Compile Include="TemplateViewResult.cs" />
     <Compile Include="FileSystemRazorView.cs" />
     <Compile Include="FileSystemRazorViewEngine.cs" />
     <Compile Include="HtmlExtensions.cs" />
-    <Compile Include="IEmailParser.cs" />
-    <Compile Include="IEmailService.cs" />
-    <Compile Include="IEmailViewRenderer.cs" />
+    <Compile Include="ITemplateParser.cs" />
+    <Compile Include="IMessagingService.cs" />
+    <Compile Include="ITemplateViewRenderer.cs" />
     <Compile Include="ImageEmbedder.cs" />
     <Compile Include="MemoryStreamJsonConverter.cs" />
     <Compile Include="ParserUtils.cs" />

@@ -8,37 +8,37 @@ using System.Web.Mvc;
 namespace Postal
 {
     /// <summary>
-    /// Renders a preview of an email to display in the browser.
+    ///     Renders a preview of an Template to display in the browser.
     /// </summary>
-    public class EmailViewResult : ViewResult
+    public class TemplateViewResult : ViewResult
     {
-        const string TextContentType = "text/plain";
-        const string HtmlContentType = "text/html";
-
-        IEmailViewRenderer Renderer { get; set; }
-        IEmailParser Parser { get; set; }
-        Email Email { get; set; }
+        private const string TextContentType = "text/plain";
+        private const string HtmlContentType = "text/html";
 
         /// <summary>
-        /// Creates a new <see cref="EmailViewResult"/>.
+        ///     Creates a new <see cref="TemplateViewResult" />.
         /// </summary>
-        public EmailViewResult(Email email, IEmailViewRenderer renderer, IEmailParser parser)
+        public TemplateViewResult(Template template, ITemplateViewRenderer renderer, ITemplateParser<MailMessage> parser)
         {
-            Email = email;
-            Renderer = renderer ?? new EmailViewRenderer(ViewEngineCollection);
-            Parser = parser ?? new EmailParser(Renderer);
+            Template = template;
+            Renderer = renderer ?? new TemplateViewRenderer(ViewEngineCollection);
+            TemplateParser = parser ?? new MailMessageTemplateParser(Renderer);
         }
 
         /// <summary>
-        /// Creates a new <see cref="EmailViewResult"/>.
+        ///     Creates a new <see cref="TemplateViewResult" />.
         /// </summary>
-        public EmailViewResult(Email email)
-            : this(email, null, null)
+        public TemplateViewResult(Template template)
+            : this(template, null, null)
         {
         }
 
+        private ITemplateViewRenderer Renderer { get; }
+        private ITemplateParser<MailMessage> TemplateParser { get; }
+        private Template Template { get; }
+
         /// <summary>
-        /// When called by the action invoker, renders the view to the response.
+        ///     When called by the action invoker, renders the view to the response.
         /// </summary>
         public override void ExecuteResult(ControllerContext context)
         {
@@ -50,18 +50,18 @@ namespace Postal
         }
 
         /// <summary>
-        /// Writes the email preview in the given format.
+        ///     Writes the Template preview in the given format.
         /// </summary>
         /// <returns>The content type for the HTTP response.</returns>
         public string ExecuteResult(TextWriter writer, string format = null)
         {
-            var result = Renderer.Render(Email);
-            var mailMessage = Parser.Parse(result, Email);
+            var result = Renderer.Render(Template);
+            var message = TemplateParser.Parse(result, Template as EmailTemplate);
 
             // no special requests; render what's in the template
             if (string.IsNullOrEmpty(format))
             {
-                if (!mailMessage.IsBodyHtml)
+                if (!message.IsBodyHtml)
                 {
                     writer.Write(result);
                     return TextContentType;
@@ -72,16 +72,16 @@ namespace Postal
                 return HtmlContentType;
             }
 
-            // Check if alternative 
-            var alternativeContentType = CheckAlternativeViews(writer, mailMessage, format);
+            // Check if alternative
+            var alternativeContentType = CheckAlternativeViews(writer, message, format);
 
             if (!string.IsNullOrEmpty(alternativeContentType))
                 return alternativeContentType;
 
             if (format == "text")
             {
-                if(mailMessage.IsBodyHtml)
-                    throw new NotSupportedException("No text view available for this email");
+                if (message.IsBodyHtml)
+                    throw new NotSupportedException("No text view available for this Template");
 
                 writer.Write(result);
                 return TextContentType;
@@ -89,8 +89,8 @@ namespace Postal
 
             if (format == "html")
             {
-                if (!mailMessage.IsBodyHtml)
-                    throw new NotSupportedException("No html view available for this email");
+                if (!message.IsBodyHtml)
+                    throw new NotSupportedException("No html view available for this Template");
 
                 var template = Extract(result);
                 template.Write(writer);
@@ -100,7 +100,7 @@ namespace Postal
             throw new NotSupportedException(string.Format("Unsupported format {0}", format));
         }
 
-        static string CheckAlternativeViews(TextWriter writer, MailMessage mailMessage, string format)
+        private static string CheckAlternativeViews(TextWriter writer, MailMessage mailMessage, string format)
         {
             var contentType = format == "html"
                 ? HtmlContentType
@@ -122,27 +122,7 @@ namespace Postal
             return contentType;
         }
 
-        class TemplateParts
-        {
-            readonly string _header;
-            readonly string _body;
-
-            public TemplateParts(string header, string body)
-            {
-                _header = header;
-                _body = body;
-            }
-
-            public void Write(TextWriter writer)
-            {
-                writer.WriteLine("<!--");
-                writer.WriteLine(_header);
-                writer.WriteLine("-->");
-                writer.WriteLine(_body);
-            }
-        }
-
-        static TemplateParts Extract(string template)
+        private static TemplateParts Extract(string template)
         {
             var headerBuilder = new StringBuilder();
 
@@ -183,7 +163,7 @@ namespace Postal
             return content;
         }
 
-        static string ComposeImageData(LinkedResource resource)
+        private static string ComposeImageData(LinkedResource resource)
         {
             var contentType = resource.ContentType.MediaType;
             var bytes = ReadFully(resource.ContentStream);
@@ -192,12 +172,32 @@ namespace Postal
                 Convert.ToBase64String(bytes));
         }
 
-        static byte[] ReadFully(Stream input)
+        private static byte[] ReadFully(Stream input)
         {
             using (var ms = new MemoryStream())
             {
                 input.CopyTo(ms);
                 return ms.ToArray();
+            }
+        }
+
+        private class TemplateParts
+        {
+            private readonly string _body;
+            private readonly string _header;
+
+            public TemplateParts(string header, string body)
+            {
+                _header = header;
+                _body = body;
+            }
+
+            public void Write(TextWriter writer)
+            {
+                writer.WriteLine("<!--");
+                writer.WriteLine(_header);
+                writer.WriteLine("-->");
+                writer.WriteLine(_body);
             }
         }
     }
