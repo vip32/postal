@@ -1,0 +1,14 @@
+﻿Content-Type: text/plain; charset=utf-8
+
+Example Template.
+@Model.Message
+@Model.Test
+
+@foreach (var val in @Model.Values)
+{
+    @val;
+    string.Format("* {0}", val);
+}
+
+@* You HAVE to use Model when using file system razor views. ViewBag will not work. *@
+@* See http://razorengine.codeplex.com/ for more info *@

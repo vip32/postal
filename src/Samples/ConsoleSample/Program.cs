@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using Postal;
 
 namespace ConsoleSample
@@ -16,26 +19,37 @@ namespace ConsoleSample
     {
         static void Main(string[] args)
         {
-            // Get the path to the directory containing views
-            var viewsPath = Path.GetFullPath(@"..\..\Views");
+            // create the email template
+            var template = new EmailTemplate("Test");
+            dynamic dtemplate = template;
+            dtemplate.To = "test1@test.com";
+            dtemplate.Message = "Hello, non-asp.net world! ";
+            dtemplate.Test = "test property";
+            dtemplate.SubjectSuffix = DateTime.Now.ToShortTimeString();
+            dtemplate.Values = new[] { "one", "two", "three" };
+            template.Attach(@"c:\tmp\test2.log");
+            template.Attach(@"c:\tmp\cat.jpg", "CatImageId"); // TODO: put in progam folder
 
-            var engines = new ViewEngineCollection();
-            engines.Add(new FileSystemRazorViewEngine(viewsPath));
+            // serialize and deserialize the email template
+            var serializerSettings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>
+                {
+                    new AttachmentReadConverter(true)
+                }
+            };
+            var serializedTemplate = JsonConvert.SerializeObject(template, Formatting.Indented, serializerSettings);
+            Console.WriteLine(serializedTemplate);
+            Console.WriteLine("serialized size: {0}", serializedTemplate.Length);
+            var deserializedTemplate = JsonConvert.DeserializeObject<EmailTemplate>(serializedTemplate, serializerSettings);
 
+            // send the email template
+            var engines = new ViewEngineCollection
+            {
+                new FileSystemRazorViewEngine(Path.GetFullPath(@"..\..\Views"))
+            };
             var service = new SmtpMessagingService(engines);
-
-            dynamic email = new EmailTemplate("Test");
-            email.Message = "Hello, non-asp.net world!";
-            service.Send(email);
-
-            // Alternatively, set the service factory like this:
-            /*
-            Template.CreateEmailService = () => new SmtpMessagingService(engines);
-
-            dynamic email = new Template("Test");
-            email.Message = "Hello, non-asp.net world!";
-            email.Send();
-            */
+            service.Send(deserializedTemplate);
         }
     }
 

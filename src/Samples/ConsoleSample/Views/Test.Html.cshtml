@@ -1,0 +1,21 @@
+﻿Content-Type: text/html; charset=utf-8
+
+Example Template.
+<html>
+<body>
+    <h1>@Model.Message</h1>
+    <p>@Model.Test</p>
+    <ul>
+        @foreach (var val in @Model.Values)
+        {
+            <li>@val</li>
+        }
+    </ul>
+
+    <img src="cid:@Model.CatImageId" alt="CatImage"/>
+
+</body>
+</html>
+
+@* You HAVE to use Model when using file system razor views. ViewBag will not work. *@
+@* See http://razorengine.codeplex.com/ for more info *@

@@ -1,9 +1,7 @@
-﻿To: test@test.com
+﻿To: @Model.To
 From: test@test.com
-Subject: Subject here
-
-Example Template.
-@Model.Message
+Subject: FILE Subject here @Model.SubjectSuffix
+Views: Text, Html
 
 @* You HAVE to use Model when using file system razor views. ViewBag will not work. *@
 @* See http://razorengine.codeplex.com/ for more info *@

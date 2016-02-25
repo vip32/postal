@@ -122,12 +122,12 @@ namespace Postal
         /// <summary>
         ///     Renders the Template view and builds a <see cref="MailMessage" />. Does not send the Template.
         /// </summary>
-        /// <param name="template">The Template to render.</param>
+        /// <param name="emailTemplate">The Template to render.</param>
         /// <returns>A <see cref="MailMessage" /> containing the rendered Template.</returns>
-        private MailMessage ToMailMessage(EmailTemplate template)
+        private MailMessage ToMailMessage(EmailTemplate emailTemplate)
         {
-            var content = _renderer.Render(template);
-            return _templateParser.Parse(content, template);  // template to mailmessage (+add attachments)
+            var content = _renderer.Render(emailTemplate);
+            return _templateParser.Parse(content, emailTemplate);  // template to mailmessage (+add attachments)
         }
     }
 }
